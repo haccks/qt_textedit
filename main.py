@@ -12,11 +12,9 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.current_file = None
-        # self.new_file()
 
     # slots for File
     def new_file(self):
-        # self.save_file()
         self.ui.textEdit.clear()
         self.current_file = None
         self.setWindowTitle("Untitled")
@@ -29,15 +27,19 @@ class MainWindow(QMainWindow):
         if not qfile.open(QIODevice.ReadWrite | QIODevice.Text):
             QMessageBox.warning(self, "Warning", qfile.errorString())
             return
-        self.setWindowTitle(QFileInfo(self.current_file).fileName())
         qin = QTextStream(qfile)  # Interface for reading and writing text.
         self.ui.textEdit.setText(qin.readAll())
+        self.setWindowTitle(QFileInfo(self.current_file).fileName())
         qfile.close()
 
     def close_file(self):
-        ret = QMessageBox.question(self, '', 'Do you want to save file...', QMessageBox.Yes | QMessageBox.No)
-        if ret == QMessageBox.Yes:
-            self.save_file()
+        if self.ui.textEdit.document().isModified():
+            ret = QMessageBox.question(self, '', 'Do you want to keep changes?', QMessageBox.Yes | QMessageBox.No|
+                                       QMessageBox.Cancel)
+            if ret == QMessageBox.Yes:
+                self.save_file()
+            elif ret == QMessageBox.Cancel:
+                return
         self.ui.textEdit.clear()
         self.current_file = None
         self.setWindowTitle("TextEdit")
@@ -57,6 +59,7 @@ class MainWindow(QMainWindow):
         out = QTextStream(qfile)  # Interface for reading and writing text.
         out << self.ui.textEdit.toPlainText()
         qfile.close()
+        self.ui.textEdit.document().setModified(False)  # Reset checkpoint for isModified()
 
     def save_as_file(self):
         dialog = QFileDialog(self)
@@ -105,6 +108,19 @@ class MainWindow(QMainWindow):
 
     def help(self):
         QMessageBox.information(self, '', "c'mon!")
+
+    def is_modified(self):
+        if self.ui.textEdit.document().isModified():  # Check if document is modified
+            if self.current_file:
+                self.setWindowTitle(QFileInfo(self.current_file).fileName()+'*')
+            else:
+                self.setWindowTitle('Untitled*')
+            # self.ui.textEdit.document().setModified(False)
+        else:
+            if self.current_file:
+                self.setWindowTitle(QFileInfo(self.current_file).fileName())
+            else:
+                self.setWindowTitle('Untitled')
 
 
 if __name__ == '__main__':

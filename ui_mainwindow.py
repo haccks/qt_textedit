@@ -94,7 +94,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 600, 22))
+        self.menubar.setGeometry(QRect(0, 0, 600, 24))
         self.menuTextEdit = QMenu(self.menubar)
         self.menuTextEdit.setObjectName(u"menuTextEdit")
         self.menuFile = QMenu(self.menubar)
@@ -154,6 +154,7 @@ class Ui_MainWindow(object):
         self.actionQuitTextEdit.triggered.connect(MainWindow.quit_app)
         self.actionSelect_All.triggered.connect(MainWindow.select_all)
         self.actionWhat_Help.triggered.connect(MainWindow.help)
+        self.textEdit.textChanged.connect(MainWindow.is_modified)
 
         QMetaObject.connectSlotsByName(MainWindow)
     # setupUi
