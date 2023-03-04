@@ -12,6 +12,7 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.current_file = None
+        # self.new_file()
 
     # slots for File
     def new_file(self):
