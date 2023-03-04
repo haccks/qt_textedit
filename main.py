@@ -17,11 +17,12 @@ class MainWindow(QMainWindow):
     def new_file(self):
         self.ui.textEdit.clear()
         self.current_file = None
-        self.setWindowTitle("Untitled")
+        self.setWindowTitle("Untitled.txt")
+        self.ui.textEdit.setReadOnly(False)
 
     def open_file(self):
-        file_name = QFileDialog.getOpenFileName(self, caption="Open", filter="Text File (*.txt)")
-        self.current_file = file_name[0]
+        file_name, _filter = QFileDialog.getOpenFileName(self, caption="Open", filter="Text File (*.txt)")
+        self.current_file = file_name
 
         qfile = QFile(self.current_file)
         if not qfile.open(QIODevice.ReadWrite | QIODevice.Text):
@@ -29,27 +30,30 @@ class MainWindow(QMainWindow):
             return
         qin = QTextStream(qfile)  # Interface for reading and writing text.
         self.ui.textEdit.setText(qin.readAll())
+        self.ui.textEdit.setReadOnly(False)
         self.setWindowTitle(QFileInfo(self.current_file).fileName())
         qfile.close()
 
     def close_file(self):
         if self.ui.textEdit.document().isModified():
-            ret = QMessageBox.question(self, '', 'Do you want to keep changes?', QMessageBox.Yes | QMessageBox.No|
+            ret = QMessageBox.question(self, '', 'Do you want to keep changes?', QMessageBox.Yes | QMessageBox.No |
                                        QMessageBox.Cancel)
             if ret == QMessageBox.Yes:
                 self.save_file()
             elif ret == QMessageBox.Cancel:
                 return
         self.ui.textEdit.clear()
+        self.ui.textEdit.setReadOnly(True)
         self.current_file = None
         self.setWindowTitle("TextEdit")
 
     def save_file(self):
         if not self.current_file:
             dialog = QFileDialog(self)
-            file_name = dialog.getSaveFileName(self, caption="Save", filter="Text File (*.txt)")
+            dialog.selectFile('Untitled.txt')
+            file_name, _filter = dialog.getSaveFileName(self, caption="Save", filter="Text File (*.txt)")
             # print(file_name)
-            self.current_file = file_name[0]
+            self.current_file = file_name
 
         qfile = QFile(self.current_file)  # Interface for reading from and writing to files.
         if not qfile.open(QIODevice.WriteOnly | QIODevice.Text):
@@ -63,10 +67,12 @@ class MainWindow(QMainWindow):
 
     def save_as_file(self):
         dialog = QFileDialog(self)
-        file_name = dialog.getSaveFileName(self, caption="Save as...", filter="Text File (*.txt)")
+        file_name, _filter = dialog.getSaveFileName(self, caption="Save as...", filter="Text File (*.txt)",
+                                                    dir=self.current_file)
 
-        self.current_file = file_name[0]
-        self.save_file()
+        if file_name:
+            self.current_file = file_name
+            self.save_file()
 
     def rename_file(self):
         if self.current_file:
@@ -112,15 +118,15 @@ class MainWindow(QMainWindow):
     def is_modified(self):
         if self.ui.textEdit.document().isModified():  # Check if document is modified
             if self.current_file:
-                self.setWindowTitle(QFileInfo(self.current_file).fileName()+'*')
+                self.setWindowTitle(QFileInfo(self.current_file).fileName() + '*')
             else:
-                self.setWindowTitle('Untitled*')
+                self.setWindowTitle('Untitled.txt*')
             # self.ui.textEdit.document().setModified(False)
         else:
             if self.current_file:
                 self.setWindowTitle(QFileInfo(self.current_file).fileName())
             else:
-                self.setWindowTitle('Untitled')
+                self.setWindowTitle('Untitled.txt')
 
 
 if __name__ == '__main__':
@@ -129,5 +135,3 @@ if __name__ == '__main__':
     window.show()
 
     app.exec_()
-
-
