@@ -31,7 +31,17 @@
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QTextEdit" name="textEdit"/>
+     <widget class="QTextEdit" name="textEdit">
+      <property name="lineWrapMode">
+       <enum>QTextEdit::FixedPixelWidth</enum>
+      </property>
+      <property name="lineWrapColumnOrWidth">
+       <number>80</number>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>

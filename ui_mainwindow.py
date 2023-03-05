@@ -88,6 +88,9 @@ class Ui_MainWindow(object):
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.textEdit = QTextEdit(self.centralwidget)
         self.textEdit.setObjectName(u"textEdit")
+        self.textEdit.setLineWrapMode(QTextEdit.FixedPixelWidth)
+        self.textEdit.setLineWrapColumnOrWidth(80)
+        self.textEdit.setReadOnly(True)
 
         self.verticalLayout.addWidget(self.textEdit)
 
